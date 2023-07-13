@@ -1,0 +1,9 @@
+All files must be kept in same folder
+
+To use program follow the following steps:
+Step One: Enter book name into search field
+Step Two: Press search button on bottom left
+Step Three: If book is in library, the find button will light up
+Step Four: Press find button to find where the book is in the library
+Step Five: Press reset button to clear book name and start again
+Step Six: Press exit button to close the program when done.
