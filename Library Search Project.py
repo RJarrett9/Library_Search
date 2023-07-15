@@ -1,7 +1,7 @@
 """
 Library Book Search
-Ryan Jarrett
-4/28/2023
+Group 4
+7/15/2023
 A user enters the book they want to find 
 Then the program finds if the library carries the book 
 If the library carries the book, the program also finds the books location
@@ -33,7 +33,7 @@ class LibrarySearch(EasyFrame):
         findBook = self.addButton(text="Find", row=4,
                                     column=3, command=self.bookArea, state="disabled") # Creates button to find where book is if book is in library
         self.addButton(text="Search", row=5,
-                                       column=0, command=self.bookSearch)
+                                       column=0, command=self.callSearch)
         self.addButton(text="Reset", row=5,
                                        column=1, command=self.searchReset)
         self.addButton(text="Exit", row=5, column=3, 
@@ -43,28 +43,32 @@ class LibrarySearch(EasyFrame):
         self.image = tkinter.PhotoImage(file = "open-book-doodle.gif") # Finds first image to display
         imageLabel["image"] = self.image
 
-
-    def bookSearch(self):
-        """Checking to see if the library carries the book"""
-        bookStocked = random.randint(0,1) # randomly finds if book is in stock
+    def callSearch(self):
         self.book = self.inputField.getText() # reads what book user entered for input validation
+        
         while True:
-            if self.inputField.getText() == "":
-                bookName = self.prompterBox(title="Error", promptString="Error. Please fill out the search field or use this field.") # Error message if user did not enter any information
+            if self.book == "":
+                bookName = self.prompterBox(title="Error", 
+                                            promptString="Error. Please fill out the search field or use this field.") # Error message if user did not enter any information
                 self.inputField = self.addTextField(text=bookName, row=2, column=0,
                                                 sticky="NSEW", columnspan=2)
-            elif self.inputField.getText() == " ":
-                bookName = self.prompterBox(title="Error", promptString="Error. Please fill out the search field or use this field.") # Error message if user did not enter any information
+            elif self.book == " ":
+                bookName = self.prompterBox(title="Error", 
+                                            promptString="Error. Please fill out the search field or use this field.") # Error message if user did not enter any information
                 self.inputField = self.addTextField(text=bookName, row=2, column=0,
                                                 sticky="NSEW", columnspan=2)
             else:
                 break
-        if bookStocked == 0:
+            self.book = self.inputField.getText()
+        
+        book = bookSearch.search(self.book)
+        
+        if book == 0:
             supplyCheck = self.addTextField(text="Your book is not carried at this library", row=4, column=0, 
                                         sticky="NSEW", columnspan=2, state="readonly")
             findBook = self.addButton(text="Find", row=4,
                                     column=3, command=self.bookArea, state="disabled")
-        elif bookStocked == 1:
+        elif book == 1:
             supplyCheck = self.addTextField(text="Your book is carried at this library", row=4, column=0, 
                                         sticky="NSEW", columnspan=2, state="readonly")
             findBook = self.addButton(text="Find", row=4,
@@ -76,16 +80,28 @@ class LibrarySearch(EasyFrame):
                                             sticky="NSEW", columnspan=2)
 
     def bookArea(self):
-        """Finding where exactly in the library the book is located"""
+        self.book = self.inputField.getText() # Section name assignment
+        areaSearch = bookArea.area(self.book)
+        self.messageBox(title="Book Location", message=(areaSearch))
+
+class bookSearch(LibrarySearch):
+    """Checking to see if the library carries the book"""
+    def search(self):
+        bookStocked = random.randint(0,1) # randomly finds if book is in stock
+        return bookStocked
+    
+class bookArea(LibrarySearch):
+    """Finding where exactly in the library the book is located"""
+    def area(self):
         searchArea = random.randint(1,25) # Randomly generates a row to find the book in
         sectionDivider = random.randint(0,1) # Randomly generates a section to find the book in
-        self.book = self.inputField.getText() # Section name assignment
+
         if sectionDivider == 0:
             sectionDivider = "Fiction"
         elif sectionDivider == 1:
             sectionDivider = "Non-Fiction"
-        self.messageBox(title="Book Location", message=(self.book + " is located in row " + str(searchArea) + " of the " + sectionDivider + " area."))
 
+        return (self + " is located in row " + str(searchArea) + " of the " + sectionDivider + " area.")
 
 def main():
     """Runs the program"""
