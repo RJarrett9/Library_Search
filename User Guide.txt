@@ -1,0 +1,8 @@
+1. Open or Run Library Search Project.py
+2. Type in the name of the book in the search bar.
+3. Hit the search button to find and display the result.
+4. If the book is found, press the find button to find out where in the library the book is located.
+
+Ryan - Gui and Class creation, basic search creation
+Brayden - book API and CSV creation
+Paul - CSV implementation, find button coder, search class improvements.
