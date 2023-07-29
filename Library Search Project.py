@@ -6,15 +6,19 @@ A user enters the book they want to find
 Then the program finds if the library carries the book 
 If the library carries the book, the program also finds the books location
 """
-
 import tkinter
 from breezypythongui import EasyFrame
 import random
 import os
+import pandas as pd
 
 # getting the path to the current directory, then setting that as the working directory
 os.chdir(os.path.realpath(os.path.dirname(__file__)))
 
+def create_checklist(file_path):
+    data = pd.read_csv(file_path)
+    checklist = data['Title'].tolist()
+    return checklist
 class LibrarySearch(EasyFrame):
 
     def __init__(self):
@@ -22,7 +26,7 @@ class LibrarySearch(EasyFrame):
         EasyFrame.__init__(self, title="Library Search", resizable="True")
         self.addLabel(text="Library Book Search", row=0, column=0, sticky="NSEW", columnspan=2)
         imageLabel = self.addLabel(text="", row=0, column=3, sticky="NSEW") # Creates first image
-        self.addLabel(text="What book do you want to search for?",
+        self.addLabel(text="What book do you want to search for? (Case Sensitive)",
                         row=1, column=0, sticky="NSEW", columnspan=2)
         self.inputField = self.addTextField(text="", row=2, column=0,
                                             sticky="NSEW", columnspan=2) # Creates and replaces text box
@@ -43,6 +47,10 @@ class LibrarySearch(EasyFrame):
         self.image = tkinter.PhotoImage(file = "open-book-doodle.gif") # Finds first image to display
         imageLabel["image"] = self.image
 
+
+        file_path = 'books.csv'
+        self.checklist = create_checklist(file_path)
+
     def callSearch(self):
         self.book = self.inputField.getText() # reads what book user entered for input validation
         
@@ -60,8 +68,10 @@ class LibrarySearch(EasyFrame):
             else:
                 break
             self.book = self.inputField.getText()
+
         
-        book = bookSearch.search(self.book)
+        book_search = bookSearch(self.checklist) # Random function for bookSearch
+        book = book_search.search(self.book)
         
         if book == 0:
             supplyCheck = self.addTextField(text="Your book is not carried at this library", row=4, column=0, 
@@ -80,19 +90,24 @@ class LibrarySearch(EasyFrame):
                                             sticky="NSEW", columnspan=2)
 
     def bookArea(self):
-        self.book = self.inputField.getText() # Section name assignment
-        areaSearch = bookArea.area(self.book)
+        book_area = bookArea() # Random function for bookArea
+        areaSearch = book_area.area(self.book)
         self.messageBox(title="Book Location", message=(areaSearch))
 
 class bookSearch(LibrarySearch):
     """Checking to see if the library carries the book"""
-    def search(self):
-        bookStocked = random.randint(0,1) # randomly finds if book is in stock
-        return bookStocked
+    def __init__(self, checklist):
+        self.checklist = checklist
+
+    def search(self, search_book):
+        if search_book in self.checklist:
+            return 1
+        else:
+            return 0
     
-class bookArea(LibrarySearch):
+class bookArea:
     """Finding where exactly in the library the book is located"""
-    def area(self):
+    def area(self, search_book):
         searchArea = random.randint(1,25) # Randomly generates a row to find the book in
         sectionDivider = random.randint(0,1) # Randomly generates a section to find the book in
 
@@ -101,7 +116,7 @@ class bookArea(LibrarySearch):
         elif sectionDivider == 1:
             sectionDivider = "Non-Fiction"
 
-        return (self + " is located in row " + str(searchArea) + " of the " + sectionDivider + " area.")
+        return f"{search_book} is located in row {searchArea} of the {sectionDivider} area."
 
 def main():
     """Runs the program"""
